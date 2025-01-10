@@ -26,9 +26,8 @@ const JobDescription = () => {
     const [activeTab, setActiveTab] = useState(0);
     const { singleCompany } = useSelector((store) => store.company);
 
-    const { singleJob, jobs
-        
-     } = useSelector((store) => store.job);
+    const { singleJob, jobs } = useSelector((store) => store.job);
+    console.log(singleJob)
     const formatPhoneNumber = (phone) => {
         if (!phone) return "";
 
@@ -187,24 +186,30 @@ const JobDescription = () => {
     const params = useParams();
     const jobId = params.id;
     const dispatch = useDispatch();
-
     const applyJobHandler = async () => {
         try {
+            const token = localStorage.getItem('token');
+            console.log("Token:", token); // Log token để kiểm tra
+    
+            // Lấy thông tin profile
             const profileRes = await axios.get(`${USER_API_END_POINT}/profile`, {
-                withCredentials: true,
+                headers: { "x-auth-token": token },
+                withCredentials: true, // Đặt withCredentials ở đúng vị trí
             });
-
+    
             const userProfile = profileRes.data.user;
-
+    
             if (!profileRes.data.success) {
                 Alert.error('You need to upload your CV before applying!');
                 return;
             }
-
+    
+            // Gửi yêu cầu apply job
             const res = await axios.get(`${APPLICATION_API_END_POINT}/apply/${jobId}`, {
-                withCredentials: true,
+                headers: { "x-auth-token": token },
+                withCredentials: true, // Đặt withCredentials ở đúng vị trí
             });
-
+    
             if (res.data.success) {
                 setIsApplied(true);
                 const updatedSingleJob = {
@@ -215,13 +220,12 @@ const JobDescription = () => {
                 toast.success(res.data.message || 'Application successful!');
             }
         } catch (error) {
-            console.error(error);
+            console.error("Error applying job:", error);
             toast.error(error.response?.data?.message || 'An error occurred!');
         }
     };
-
     useEffect(() => {
-        if (!user) return;
+
 
         const fetchSingleJob = async () => {
             try {
@@ -234,7 +238,7 @@ const JobDescription = () => {
                         const companyResponse = await axios.get(`${JOB_API_END_POINT}/getlogo/${jobId}`, {
                             withCredentials: true,
                         });
-
+                        console.log(companyResponse)
                         setCompany(companyResponse.data.company);
                     }
                     setIsApplied(

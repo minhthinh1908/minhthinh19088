@@ -22,7 +22,7 @@ import "react-quill/dist/quill.snow.css"; // Import kiểu dáng mặc định c
 import useGetAllCompanies from '@/hooks/useGetAllCompanies';
 import useGetCompanyById from '@/hooks/useGetCompanyById';
 
-const PostJob = () => {
+const PostJobForm = ({ job, onSubmit, onCancel }) => {
     const [jobInput, setJobInput] = useState({
         title: '',
         location: '',
@@ -182,7 +182,6 @@ const PostJob = () => {
             const res = await axios.post(`${JOB_API_END_POINT}/post`, payload, {
                 headers: {
                     "Content-Type": "application/json",
-                    "x-auth-token": token
                 },
                 withCredentials: true,
             });
@@ -201,26 +200,8 @@ const PostJob = () => {
             setLoading(false);
         }
     };
-
-    // useEffect(() => {
-    //     setContactInput({
-    //         companyName: singleCompany.companyName || "",
-    //         description: singleCompany.description || "",
-    //         location: singleCompany.location || "",
-    //         employeeCount: singleCompany.employeeCount || "",
-    //         contactPerson: singleCompany.contactPerson || "",
-    //         businessType: singleCompany.businessType || "",
-    //         phone: singleCompany.phone || "",
-    //         email: singleCompany.email || "",
-    //         workplace: singleCompany.workplace || "",
-    //         industry: singleCompany.industry || "",
-    //         file: singleCompany.file || null
-    //     });
-    // }, [singleCompany]);
-
     return (
         <div>
-            <Navbar />
             <div className="max-w mx-auto my-10 px-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
@@ -773,4 +754,4 @@ const PostJob = () => {
     );
 };
 
-export default PostJob;
+export default PostJobForm;

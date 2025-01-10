@@ -15,6 +15,12 @@ import PostJob from './components/admin/PostJob'
 import Applicants from './components/admin/Applicants'
 import ProtectedRoute from './components/admin/ProtectedRoute'
 import { createGlobalStyle } from 'styled-components';
+import JobSetup from './components/admin/JobSetup'
+import AdminLogin from './components/auth/AdminLogin'
+import AdminDashboard from './components/admin/AdminDashboard'
+import AdminUsers from './components/admin/AdminUsers'
+import AdminJob from './components/admin/AdminJob'
+import AdminCompanies from './components/admin/AdminCompanies'
 const GlobalStyle = createGlobalStyle`
   /* Import nhiều font từ Google Fonts */
   @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap');
@@ -51,15 +57,38 @@ const GlobalStyle = createGlobalStyle`
 const appRouter = createBrowserRouter([
   {
     path: '/',
-    element: <Home />
-  },
+    element: <Home />},
   {
     path: '/login',
-    element: <Login />
+    element: <Login /> // Không cần ProtectedRoute vì đây là trang đăng nhập
+  },
+  {
+    path: '/admin/users',
+    element: <ProtectedRoute><AdminUsers /></ProtectedRoute>
+  },
+  {
+    path: '/admin/company',
+    element: <ProtectedRoute><AdminCompanies /></ProtectedRoute>
+  },
+  {
+    path: '/admin/job',
+    element: <ProtectedRoute><AdminJob /></ProtectedRoute>
+  },
+  {
+    path: '/admin/job/details',
+    element: <ProtectedRoute><AdminJob /></ProtectedRoute>
+  },
+  {
+    path: '/admin/login',
+    element: <AdminLogin /> // Không cần ProtectedRoute vì đây là trang đăng nhập admin
+  },
+  {
+    path: '/admin/dashboard',
+    element: <ProtectedRoute><AdminDashboard /></ProtectedRoute>
   },
   {
     path: '/signup',
-    element: <Signup />
+    element: <Signup /> // Không cần ProtectedRoute vì đây là trang đăng ký
   },
   {
     path: "/jobs",
@@ -75,35 +104,37 @@ const appRouter = createBrowserRouter([
   },
   {
     path: "/profile",
-    element: <Profile />
-  },
-  // admin ke liye yha se start hoga
-  {
-    path:"/admin/companies",
-    element: <ProtectedRoute><Companies/></ProtectedRoute>
+    element: <ProtectedRoute><Profile /></ProtectedRoute>
   },
   {
-    path:"/admin/companies/create",
-    element: <ProtectedRoute><CompanyCreate/></ProtectedRoute> 
+    path: "/admin/companies",
+    element: <ProtectedRoute><Companies /></ProtectedRoute>
   },
   {
-    path:"/admin/companies/:id",
-    element:<ProtectedRoute><CompanySetup/></ProtectedRoute> 
+    path: "/admin/companies/create",
+    element: <ProtectedRoute><CompanyCreate /></ProtectedRoute>
   },
   {
-    path:"/admin/jobs",
-    element:<ProtectedRoute><AdminJobs/></ProtectedRoute> 
+    path: "/admin/companies/:id",
+    element: <ProtectedRoute><CompanySetup /></ProtectedRoute>
   },
   {
-    path:"/admin/jobs/create",
-    element:<ProtectedRoute><PostJob/></ProtectedRoute> 
+    path: "/admin/job/:id",
+    element: <ProtectedRoute><JobSetup /></ProtectedRoute>
   },
   {
-    path:"/admin/jobs/:id/applicants",
-    element:<ProtectedRoute><Applicants/></ProtectedRoute> 
+    path: "/admin/jobs",
+    element: <ProtectedRoute><AdminJobs /></ProtectedRoute>
   },
-
-])
+  {
+    path: "/admin/jobs/create",
+    element: <ProtectedRoute><PostJob /></ProtectedRoute>
+  },
+  {
+    path: "/admin/jobs/:id/applicants",
+    element: <ProtectedRoute><Applicants /></ProtectedRoute>
+  },
+]);
 function App() {
 
   return (

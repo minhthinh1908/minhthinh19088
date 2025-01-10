@@ -83,7 +83,33 @@ export const registerCompany = async (req, res) => {
     }
 };
 
+export const getAllCompanies = async (req, res) => {
+    try {
+        // Tìm tất cả các công ty có isActive là "active"
+        const companies = await Company.find({ isActive: "active" });
 
+        // Kiểm tra nếu không có công ty nào được tìm thấy
+        if (companies.length === 0) {
+            return res.status(404).json({
+                message: "Không tìm thấy công ty nào.",
+                success: false
+            });
+        }
+
+        // Trả về danh sách công ty nếu tìm thấy
+        return res.status(200).json({
+            companies,
+            success: true
+        });
+
+    } catch (error) {
+        console.error("Lỗi khi lấy danh sách công ty:", error);
+        return res.status(500).json({
+            message: "Đã xảy ra lỗi khi lấy danh sách công ty.",
+            success: false
+        });
+    }
+};
 export const getCompany = async (req, res) => {
     try {
         const userId = req.id; // ID người dùng đã đăng nhập

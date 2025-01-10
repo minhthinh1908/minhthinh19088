@@ -1,52 +1,70 @@
 import { Application } from "../models/application.model.js";
 import { Job } from "../models/job.model.js";
 import nodemailer from 'nodemailer';
-
 export const applyJob = async (req, res) => {
     try {
-        const userId = req.id;
-        const jobId = req.params.id;
+        const userId = req.user.userId; // Lấy userId từ request (đã được xác thực bởi middleware)
+        const jobId = req.params.id; // Lấy jobId từ request params
+
+        // Kiểm tra xem jobId có được cung cấp không
         if (!jobId) {
             return res.status(400).json({
                 message: "ID công việc là bắt buộc.",
-                success: false
-            })
-        };
-        // kiểm tra xem người dùng đã nộp đơn xin việc này chưa
-        const existingApplication = await Application.findOne({ job: jobId, applicant: userId });
-
-        if (existingApplication) {
-            return res.status(400).json({
-                message: "Bạn đã nộp đơn xin việc này rồi.",
-                success: false
+                success: false,
             });
         }
 
-        // kiểm tra xem công việc có tồn tại không
+        // Kiểm tra xem người dùng đã nộp đơn xin việc này chưa
+        const existingApplication = await Application.findOne({ job: jobId, applicant: userId });
+        if (existingApplication) {
+            return res.status(400).json({
+                message: "Bạn đã nộp đơn xin việc này rồi.",
+                success: false,
+            });
+        }
+
+        // Kiểm tra xem công việc có tồn tại không
         const job = await Job.findById(jobId);
         if (!job) {
             return res.status(404).json({
                 message: "Công việc không tìm thấy.",
-                success: false
-            })
+                success: false,
+            });
         }
-        // tạo một đơn xin việc mới
+
+        // Tạo một đơn xin việc mới
         const newApplication = await Application.create({
             job: jobId,
             applicant: userId,
         });
 
+        // Thêm đơn xin việc vào danh sách ứng tuyển của công việc
         job.applications.push(newApplication._id);
         await job.save();
+
+        // Trả về phản hồi thành công
         return res.status(201).json({
             message: "Nộp đơn xin việc thành công.",
-            success: true
-        })
+            success: true,
+            data: newApplication, // Trả về thông tin đơn xin việc (tùy chọn)
+        });
     } catch (error) {
-        console.log(error);
+        console.error("Lỗi khi nộp đơn xin việc:", error);
+
+        // Phân loại lỗi và trả về phản hồi phù hợp
+        if (error.name === "CastError") {
+            return res.status(400).json({
+                message: "ID công việc không hợp lệ.",
+                success: false,
+            });
+        }
+
+        return res.status(500).json({
+            message: "Lỗi server. Vui lòng thử lại sau.",
+            success: false,
+        });
     }
 };
-
 export const getAppliedJobs = async (req, res) => {
     try {
         const userId = req.id;

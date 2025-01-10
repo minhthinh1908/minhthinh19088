@@ -22,7 +22,7 @@ const Signup = () => {
         role: "",
         file: ""
     });
-
+    localStorage.clear()
     const { loading, user } = useSelector(store => store.auth);
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -190,7 +190,7 @@ const Signup = () => {
                                     className="cursor-pointer w-4 h-4"
                                 />
                                 <Label htmlFor="r1" className="cursor-pointer">
-                                    Student
+                                Candidate
                                 </Label>
                             </div>
 
@@ -205,7 +205,7 @@ const Signup = () => {
                                     className="cursor-pointer w-4 h-4"
                                 />
                                 <Label htmlFor="r2" className="cursor-pointer">
-                                    Employer
+                                Recruiter
                                 </Label>
                             </div>
                         </RadioGroup>

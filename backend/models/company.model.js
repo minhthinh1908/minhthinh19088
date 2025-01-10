@@ -42,6 +42,11 @@ const companySchema = new mongoose.Schema({
         ref: 'User',
         required: true,
     },
+    isActive: {
+        type: String,
+        enum: ['pending', 'active', 'deleted', 'blocked'],
+        default: 'active'
+    },
 }, { timestamps: true });
 
 export const Company = mongoose.model("Company", companySchema);

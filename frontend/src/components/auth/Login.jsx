@@ -19,21 +19,65 @@ const Login = () => {
         password: "",
         role: "",
     });
-    const { loading, user } = useSelector(store => store.auth);
+    const { loading, user } = useSelector((store) => store.auth);
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
     const changeEventHandler = (e) => {
         setInput({ ...input, [e.target.name]: e.target.value });
-    }
+    };
+
+    // Hàm kiểm tra tính hợp lệ của dữ liệu nhập
+    const validateInput = () => {
+        const { email, password, role } = input;
+
+        // Kiểm tra email
+        if (!email) {
+            Alert.error("Email is required.");
+            return false;
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            Alert.error("Invalid email format.");
+            return false;
+        }
+
+        // Kiểm tra mật khẩu
+        if (!password) {
+            Alert.error("Password is required.");
+            return false;
+        }
+        if (password.length < 6) {
+            Alert.error("Password must be at least 6 characters long.");
+            return false;
+        }
+
+        // Kiểm tra vai trò
+        if (!role) {
+            Alert.error("Role is required.");
+            return false;
+        }
+        if (!["student", "recruiter"].includes(role)) {
+            Alert.error("Invalid role. Please select either 'student' or 'recruiter'.");
+            return false;
+        }
+
+        return true; // Dữ liệu hợp lệ
+    };
 
     const submitHandler = async (e) => {
         e.preventDefault();
+
+        // Kiểm tra tính hợp lệ của dữ liệu nhập
+        if (!validateInput()) {
+            return; // Nếu không hợp lệ, dừng việc gửi yêu cầu
+        }
+
         try {
             dispatch(setLoading(true));
             const res = await axios.post(`${USER_API_END_POINT}/login`, input, {
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
                 withCredentials: true,
             });
@@ -41,19 +85,34 @@ const Login = () => {
             if (res.data.success) {
                 dispatch(setUser(res.data.user));
                 navigate("/");
-
-
+                localStorage.setItem('token', res.data.token)
                 Alert.success(res.data.message);
+            } else {
+                Alert.error(res.data.message);
             }
         } catch (error) {
-            console.log(error);
+            // Xử lý lỗi từ server
+            if (error.response) {
+                const { status, data } = error.response;
 
-
+                // Kiểm tra mã lỗi 403
+                if (status === 403) {
+                    Alert.warning(data.message || "You do not have permission to log in.");
+                } else {
+                    Alert.error(data.message || "An error occurred while logging in.");
+                }
+            } else {
+                // Xử lý lỗi không phải từ server (lỗi mạng, lỗi kết nối, v.v.)
+                console.log(error);
+                Alert.error("An unexpected error occurred. Please try again later.");
+            }
         } finally {
             dispatch(setLoading(false));
         }
+
     };
-    
+
+
     useEffect(() => {
         if (user) {
             navigate("/");
@@ -99,7 +158,7 @@ const Login = () => {
                                     className="cursor-pointer w-4 h-4"
                                 />
                                 <Label htmlFor="r1" className="cursor-pointer">
-                                    Student
+                                    Candidate
                                 </Label>
                             </div>
 
@@ -114,7 +173,7 @@ const Login = () => {
                                     className="cursor-pointer w-4 h-4"
                                 />
                                 <Label htmlFor="r2" className="cursor-pointer">
-                                    Employer
+                                    Recruiter
                                 </Label>
                             </div>
                         </RadioGroup>

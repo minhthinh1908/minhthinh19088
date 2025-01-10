@@ -87,12 +87,10 @@ const jobSchema = new mongoose.Schema(
         company: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Company",
-            required: true,
         },
         created_by: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
-            required: true,
         },
         applications: [
             {
@@ -100,6 +98,11 @@ const jobSchema = new mongoose.Schema(
                 ref: "Application",
             },
         ],
+         isActive: {
+        type: String,
+        enum: ['pending', 'active', 'deleted', 'blocked'],
+        default: 'active'
+    },
     },
     { timestamps: true }
 );

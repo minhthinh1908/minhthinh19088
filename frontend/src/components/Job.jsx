@@ -4,15 +4,16 @@ import { Bookmark } from 'lucide-react'
 import { Avatar, AvatarImage } from './ui/avatar'
 import { Badge } from './ui/badge'
 import { useNavigate } from 'react-router-dom'
+import { FaMoneyBillWave } from 'react-icons/fa'
 
-const Job = ({job}) => {
+const Job = ({ job }) => {
     const navigate = useNavigate();
-    
+
     const daysAgoFunction = (mongodbTime) => {
         const createdAt = new Date(mongodbTime);
         const currentTime = new Date();
         const timeDifference = currentTime - createdAt;
-        return Math.floor(timeDifference/(1000*24*60*60));
+        return Math.floor(timeDifference / (1000 * 24 * 60 * 60));
     }
 
     const formatCurrency = (value) => {
@@ -22,47 +23,75 @@ const Job = ({job}) => {
         }).format(value);
     }
 
-    
+
     return (
-        <div className='p-5 rounded-md shadow-xl bg-white border border-gray-100'>
-            <div className='flex items-center justify-between'>
-                <p className='text-sm text-gray-500'>{daysAgoFunction(job?.createdAt) === 0 ? "Hôm nay" : `${daysAgoFunction(job?.createdAt)} ngày trước`}</p>
-                <Button variant="outline" className="rounded-full" size="icon"><Bookmark /></Button>
+        <div className="p-6 rounded-lg shadow-lg bg-white border border-gray-200">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+                <p className="text-xs text-gray-400">
+                    {daysAgoFunction(job?.createdAt) === 0 ? "Hôm nay" : `${daysAgoFunction(job?.createdAt)} ngày trước`}
+                </p>
+                <Button variant="outline" className="rounded-full p-2" size="icon">
+                    <Bookmark />
+                </Button>
             </div>
 
-            <div className='flex items-center gap-2 my-2'>
-                <Button className="p-6" variant="outline" size="icon">
-                    <Avatar>
-                        <AvatarImage src={job?.company?.logo} />
-                    </Avatar>
-                </Button>
+            {/* Company Info */}
+            <div className="flex items-center gap-3 my-4">
+            <Button className="p-4 rounded-full bg-gray-100" variant="outline" size="icon">
+    <Avatar>
+        <AvatarImage src={job?.company?.logo || "https://yancypher.gold/img/verified.png"} />
+    </Avatar>
+</Button>
+
                 <div>
-                    <h1 className='font-medium text-lg'>{job?.company?.companyName}</h1>
-                    <p className='text-sm text-gray-500'>Việt Nam</p>
+                    <h5 className="font-semibold text-base">{`${job?.company?.companyName.slice(0, 22)}...`}</h5>
+                    <p className="text-xs text-gray-500">{job?.location}</p>
                 </div>
             </div>
 
-            <div>
-                <h1 className='font-bold text-lg my-2'>{job?.title}</h1>
-                <p className='text-sm text-gray-600'>{job?.description ? (
-                                    <div
-                                        className="text-gray-600"
-                                        dangerouslySetInnerHTML={{ __html: job?.description }} // Hiển thị nội dung HTML từ React Quill
-                                    ></div>
-                                ) : (
-                                    <p className="text-gray-600">Chưa có thông tin giới thiệu</p>
-                                )}</p>
+            {/* Job Title and Description */}
+            <div className="my-4">
+                <h5 className="font-bold text-xl text-gray-800">{`${job?.title.slice(0, 22)}...`}</h5>
+                <p className="text-sm text-gray-600 mt-2">
+                    {job?.description ? (
+                        <div
+                            className="text-gray-600"
+                            dangerouslySetInnerHTML={{
+                                __html: job.description.length > 100
+                                    ? `${job.description.slice(0, 100)}...`
+                                    : job.description,
+                            }}
+                        ></div>
+                    ) : (
+                        <span className="text-gray-600">Chưa có thông tin giới thiệu</span>
+                    )}
+                </p>
             </div>
-            <div className='flex items-center gap-2 mt-4'>
-                <Badge className={'text-blue-700 font-bold'} variant="ghost">{job?.position} Vị trí</Badge>
-                <Badge className={'text-[#F83002] font-bold'} variant="ghost">{job?.jobType}</Badge>
-                <Badge className={'text-[#7209b7] font-bold'} variant="ghost">{formatCurrency(job?.salary)}</Badge>
+
+            {/* Job Details */}
+            <div className="flex flex-wrap items-center">
+
+                <FaMoneyBillWave style={{ marginRight: "10px", fontSize: "16px", color: "#555" }} />
+                <span>  {formatCurrency(job?.salary)}</span>
+
             </div>
-            <div className='flex items-center gap-4 mt-4'>
-                <Button onClick={()=> navigate(`/description/${job?._id}`)} variant="outline">Detail</Button>
-                <Button className="bg-[#7209b7]">Save for later</Button>
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-4 mt-6">
+                <Button
+                    onClick={() => navigate(`/description/${job?._id}`)}
+                    variant="outline"
+                    className="border-gray-300 text-gray-700 hover:bg-gray-100"
+                >
+                    Chi tiết
+                </Button>
+                <Button className="bg-purple-700 text-white hover:bg-purple-800">
+                    Lưu lại
+                </Button>
             </div>
         </div>
+
     )
 }
 

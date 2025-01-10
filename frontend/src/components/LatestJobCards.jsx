@@ -5,7 +5,6 @@ import { FaMapMarkerAlt, FaBriefcase, FaMoneyBillAlt, FaClock } from 'react-icon
 const LatestJobCards = ({ job }) => {
     const navigate = useNavigate();
     const [showFullDescription, setShowFullDescription] = useState(false);
-
     const formatCurrency = (value) => {
         return new Intl.NumberFormat('vi-VN', {
             style: 'currency',
@@ -36,7 +35,7 @@ const LatestJobCards = ({ job }) => {
                         alt={job?.company?.name}
                         className='w-16 h-16 rounded-lg object-cover border border-gray-200'
                     />
-                
+
                 </div>
 
                 {/* Details Column */}

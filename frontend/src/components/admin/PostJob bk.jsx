@@ -150,11 +150,12 @@ const PostJob = () => {
             };
 
             console.log("Payload sent to API:", payload);
-
+            const token = localStorage.getItem("token");
             // Gửi dữ liệu qua API
             const res = await axios.post(`${JOB_API_END_POINT}/post`, payload, {
                 headers: {
                     "Content-Type": "application/json",
+                    "x-auth-token": token
                 },
                 withCredentials: true,
             });
